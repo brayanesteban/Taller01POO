@@ -108,6 +108,35 @@
             }
             return second;
         }
+        public int ToMilliseconds()
+        {
+            return Hour * 3600000 + 
+             Minutes * 60000 + 
+             Seconds * 1000 + 
+             Milliseconds;
+        }
+
+        public int ToSeconds()
+        {
+            return ToMilliseconds() / 1000;
+        }
+
+        public int ToMinutes()
+        {
+            return ToSeconds() / 60;
+        }
+
+        public int Add(Time other)
+        {
+            return ToMilliseconds() + other.ToMilliseconds();
+        }
+
+        public bool IsOtherDay(Time other)
+        {
+            return Hour < other.Hour || (Hour == other.Hour && Minutes < other.Minutes) ||
+                   (Hour == other.Hour && Minutes == other.Minutes && Seconds < other.Seconds) ||
+                   (Hour == other.Hour && Minutes == other.Minutes && Seconds == other.Seconds && Milliseconds < other.Milliseconds);
+        }
     }
 }
 
