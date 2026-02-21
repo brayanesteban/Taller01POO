@@ -72,13 +72,21 @@
 
         public override string ToString()
         {
-            return $"{Hour:D2}:{Minutes:D2}:{Seconds:D2}.{Milliseconds:D3}";
+            int hour12 = Hour % 12;
+
+            if (hour12 == 0)
+                hour12 = 12;
+
+            string period = Hour < 12 ? "AM" : "PM";
+
+            return $"{hour12:D2}:{Minutes:D2}:{Seconds:D2}.{Milliseconds:D3} {period}";
+
         }
         private int ValidateHour(int hour)
         {
             if (hour < 0 || hour > 23)
             {
-                throw new ArgumentOutOfRangeException(nameof(hour), "Hour must be between 0 and 23.");
+                throw new ArgumentOutOfRangeException(nameof(hour), $"The hour: {hour}, is not valid");
             }
             return hour;
         }
@@ -87,7 +95,7 @@
         {
             if (minute < 0 || minute > 59)
             {
-                throw new ArgumentOutOfRangeException(nameof(minute), "Minute must be between 0 and 59.");
+                throw new ArgumentOutOfRangeException(nameof(minute), $"The minute: {minute}, is not valid");
             }
             return minute;
         }
@@ -96,7 +104,7 @@
         {
            if( millisecond < 0 || millisecond > 999)
             {
-                throw new ArgumentOutOfRangeException(nameof(millisecond), "Millisecond must be between 0 and 999.");
+                throw new ArgumentOutOfRangeException(nameof(millisecond), $"The millisecond {millisecond} is not valid");
             }
             return millisecond ;
         }
@@ -104,7 +112,7 @@
         {
             if (second < 0 || second > 59)
             {
-                throw new ArgumentOutOfRangeException(nameof(second), "Second must be between 0 and 59.");
+                throw new ArgumentOutOfRangeException(nameof(second), $"The Second {second} is not valid");
             }
             return second;
         }
@@ -126,9 +134,24 @@
             return ToSeconds() / 60;
         }
 
-        public int Add(Time other)
+        public Time Add(Time other)
         {
-            return ToMilliseconds() + other.ToMilliseconds();
+            int totalMilliseconds = ToMilliseconds() + other.ToMilliseconds();
+
+            int millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+            totalMilliseconds = totalMilliseconds % millisecondsPerDay;
+
+            int hour = totalMilliseconds / 3600000;
+            totalMilliseconds %= 3600000;
+
+            int minute = totalMilliseconds / 60000;
+            totalMilliseconds %= 60000;
+
+            int second = totalMilliseconds / 1000;
+            int millisecond = totalMilliseconds % 1000;
+
+            return new Time(hour, minute, second, millisecond);
         }
 
         public bool IsOtherDay(Time other)
