@@ -156,9 +156,19 @@
 
         public bool IsOtherDay(Time other)
         {
-            return Hour < other.Hour || (Hour == other.Hour && Minutes < other.Minutes) ||
-                   (Hour == other.Hour && Minutes == other.Minutes && Seconds < other.Seconds) ||
-                   (Hour == other.Hour && Minutes == other.Minutes && Seconds == other.Seconds && Milliseconds < other.Milliseconds);
+
+            int totalMs = Milliseconds + other.Milliseconds;
+            int extraSec = totalMs / 1000;
+
+            int totalSec = Seconds + other.Seconds + extraSec;
+            int extraMin = totalSec / 60;
+
+            int totalMin = Minutes + other.Minutes + extraMin;
+            int extraHour = totalMin / 60;
+
+            int totalHour = Hour + other.Hour + extraHour;
+
+            return totalHour >= 24;
         }
     }
 }
